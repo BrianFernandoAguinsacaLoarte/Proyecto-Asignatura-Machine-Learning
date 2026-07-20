@@ -15,7 +15,7 @@ st.set_page_config(
 # Título
 # --------------------------------------------------
 
-st.title("Sistema de Predicción de Riesgo Académico")
+st.title("🎓 Sistema de Predicción de Riesgo Académico")
 
 st.markdown("""
 Esta aplicación permite estimar el riesgo académico de un estudiante
@@ -40,7 +40,7 @@ with st.form("prediction_form"):
     # INFORMACIÓN ACADÉMICA
     # ========================================================
 
-    st.subheader("Información académica")
+    st.subheader("📘 Información académica")
 
     col1, col2 = st.columns(2)
 
@@ -93,7 +93,7 @@ with st.form("prediction_form"):
     # RENDIMIENTO ACADÉMICO
     # ========================================================
 
-    st.subheader("Rendimiento académico")
+    st.subheader("📊 Rendimiento académico")
 
     col1, col2 = st.columns(2)
 
@@ -156,7 +156,7 @@ with st.form("prediction_form"):
     # PARTICIPACIÓN
     # ========================================================
 
-    st.subheader("Participación en el aula virtual")
+    st.subheader("💻 Participación en el aula virtual")
 
     col1, col2 = st.columns(2)
 
@@ -204,7 +204,7 @@ with st.form("prediction_form"):
     # INFORMACIÓN PERSONAL
     # ========================================================
 
-    st.subheader("Información del estudiante")
+    st.subheader("👤 Información del estudiante")
 
     col1, col2 = st.columns(2)
 
@@ -232,7 +232,7 @@ with st.form("prediction_form"):
     st.divider()
 
     predict = st.form_submit_button(
-        "Analizar estudiante",
+        "🔍 Analizar estudiante",
         use_container_width=True
     )
 
@@ -351,7 +351,7 @@ if predict:
 
         st.divider()
 
-        st.subheader("Resultado del análisis académico")
+        st.subheader("📋 Resultado del análisis académico")
 
 
         # -----------------------------------------------------
@@ -361,31 +361,63 @@ if predict:
         if result["prediction"] == 1:
 
             st.error(
-                "Riesgo Académico detectado"
+                "⚠️ Riesgo Académico detectado"
             )
 
         else:
 
             st.success(
-                "Sin Riesgo Académico"
+                "✅ No Riesgo Académico"
             )
 
         fig, importance, explanations = explain_prediction(X)
 
-        #with st.expander("🔎 Ver explicación técnica SHAP"):
+        with st.expander("🔎 Ver explicación técnica SHAP"):
 
-        #    st.pyplot(fig)
+            st.pyplot(fig)
 
-        #    st.dataframe(
-        #        importance.head(5)
-        #   )
+            st.dataframe(
+                importance.head(10)
+            )
 
-        
+        st.subheader("💡 Explicación del resultado")
+
+
+        for item in explanations:
+
+            if item.get("impact") == "Incrementa la probabilidad de riesgo":
+
+                st.warning(
+                    f"""
+                    🔴 **{item['name']}**
+
+                    {item['message']}
+                    """
+                )
+
+            else:
+
+                st.success(
+                    f"""
+                    🟢 **{item['name']}**
+
+                    {item['message']}
+                    """
+                )
+
         # -----------------------------------------------------
         # Métricas
         # -----------------------------------------------------
 
-        col2, col3 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
+
+
+        with col1:
+
+            st.metric(
+                "Confianza del modelo",
+                f"{result['confidence']*100:.2f}%"
+            )
 
 
         with col2:
@@ -406,7 +438,7 @@ if predict:
         
         
         # Barra visual
-        st.subheader("Nivel de riesgo")
+        st.subheader("📊 Nivel de riesgo")
 
 
         st.progress(
@@ -419,34 +451,9 @@ if predict:
             f"{result['prob_risk']*100:.2f}%"
         )
 
-        st.subheader("Explicación del resultado")
-
-
-        for item in explanations:
-
-            if item.get("impact") == "Incrementa la probabilidad de riesgo":
-
-                st.warning(
-                    f"""
-                     **{item['name']}**
-
-                    {item['message']}
-                    """
-                )
-
-            else:
-
-                st.success(
-                    f"""
-                     **{item['name']}**
-
-                    {item['message']}
-                    """
-                )
-
         
         #Recomendacion 
-        st.subheader("Recomendación")
+        st.subheader("💡 Recomendación")
 
 
         if result["prediction"] == 1:
